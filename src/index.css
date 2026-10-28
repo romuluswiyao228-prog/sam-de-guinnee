@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+:root {
+  --sam-navy: #0B1B33;
+  --sam-gold: #F2B705;
+  --sam-red: #D52B1E;
+  --sam-green: #00A651;
+  --sam-bg: #F3F5F9;
+  --sam-text: #1D2733;
+
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  color: var(--sam-text);
+  background-color: var(--sam-bg);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
