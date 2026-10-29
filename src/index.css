@@ -1,19 +1,62 @@
 @import "tailwindcss";
 
+@theme {
+  --color-sam-navy: #0B1B33;
+  --color-sam-navy-light: #12294A;
+  --color-sam-gold: #F2B705;
+  --color-sam-gold-hover: #D8A304;
+  --color-sam-red: #D52B1E;
+  --color-sam-green: #00A651;
+  --color-sam-bg: #F3F5F9;
+  --color-sam-text: #1D2733;
+  --color-sam-gray: #6B7686;
+  --color-sam-border: #D9DEE7;
+
+  --font-heading: 'Poppins', sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
 :root {
   --sam-navy: #0B1B33;
+  --sam-navy-light: #12294A;
   --sam-gold: #F2B705;
+  --sam-gold-hover: #D8A304;
   --sam-red: #D52B1E;
   --sam-green: #00A651;
   --sam-bg: #F3F5F9;
   --sam-text: #1D2733;
+  --sam-gray: #6B7686;
+  --sam-border: #D9DEE7;
 
-  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  font-family: var(--font-body);
   color: var(--sam-text);
   background-color: var(--sam-bg);
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Liseré tricolore guinéen rouge - jaune/or - vert */
+.sam-tricolor-gradient {
+  background: linear-gradient(90deg, #D52B1E 0%, #F2B705 50%, #00A651 100%);
+}
+
+.sam-tricolor-bar {
+  height: 4px;
+  background: linear-gradient(90deg, #D52B1E 0%, #F2B705 50%, #00A651 100%);
+}
+
+/* Accessibilité : contour de focus très visible */
+:focus-visible {
+  outline: 2px solid #F2B705;
+  outline-offset: 2px;
 }

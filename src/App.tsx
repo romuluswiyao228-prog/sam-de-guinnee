@@ -1,56 +1,91 @@
-import { useState, useEffect } from 'react'
-import { supabase } from '@/lib/supabase'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider, useAuth } from '@/contexts/AuthContext'
+import { RequireAuth, RequireRole } from '@/components/auth/RouteGuards'
+import { RootLayout } from '@/components/layout/RootLayout'
+
+import HomePage from '@/pages/HomePage'
+import ComingSoonPage from '@/pages/ComingSoonPage'
+import LoginPage from '@/pages/auth/LoginPage'
+import RegisterPage from '@/pages/auth/RegisterPage'
+import ForgotPasswordPage from '@/pages/auth/ForgotPasswordPage'
+import ResetPasswordPage from '@/pages/auth/ResetPasswordPage'
+import AccountPage from '@/pages/auth/AccountPage'
+import SecurityPage from '@/pages/auth/SecurityPage'
+import AdminDashboard from '@/pages/admin/AdminDashboard'
+import StaffScanPage from '@/pages/staff/StaffScanPage'
+import NotFoundPage from '@/pages/NotFoundPage'
+
+/**
+ * GuestOnly — redirige les utilisateurs déjà connectés vers leur espace par défaut.
+ * Évite d'accéder à /connexion ou /inscription lorsqu'on a déjà une session active.
+ */
+function GuestOnly({ children }: { children: React.ReactNode }) {
+  const { user, loading, getDefaultRedirect } = useAuth()
+
+  if (loading) return null
+
+  if (user) {
+    return <Navigate to={getDefaultRedirect()} replace />
+  }
+
+  return <>{children}</>
+}
 
 export function App() {
-  const [editionStatus, setEditionStatus] = useState<string>('Initialisation du socle...')
-
-  useEffect(() => {
-    async function checkConnection() {
-      try {
-        const { error } = await supabase.from('editions').select('count', { count: 'exact', head: true })
-        if (error) {
-          setEditionStatus('Socle initialisé — En attente des migrations Supabase locales')
-        } else {
-          setEditionStatus('Connecté au socle de données Supabase')
-        }
-      } catch {
-        setEditionStatus('Socle initialisé — Mode local')
-      }
-    }
-    checkConnection()
-  }, [])
-
   return (
-    <main className="min-h-screen bg-[#F3F5F9] text-[#1D2733] flex flex-col items-center justify-center p-6">
-      <div className="max-w-xl w-full bg-white rounded-2xl shadow-lg border border-slate-200 p-8 text-center">
-        <div className="w-16 h-1 bg-gradient-to-r from-[#D52B1E] via-[#F2B705] to-[#00A651] mx-auto mb-6 rounded-full" />
-        <h1 className="text-2xl font-bold font-['Poppins'] text-[#0B1B33] mb-2">
-          SAM Guinée 2027
-        </h1>
-        <p className="text-sm font-medium text-slate-500 mb-6 uppercase tracking-wider">
-          Salon Auto et Mobilité de Guinée · 19–28 mars 2027
-        </p>
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          {/* Routes publiques avec le Layout global (Header collant + Footer) */}
+          <Route element={<RootLayout />}>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/programme" element={<ComingSoonPage />} />
+            <Route path="/exposants" element={<ComingSoonPage />} />
+            <Route path="/sponsors" element={<ComingSoonPage />} />
+            <Route path="/financement" element={<ComingSoonPage />} />
+            <Route path="/rallye" element={<ComingSoonPage />} />
+            <Route path="/infos-pratiques" element={<ComingSoonPage />} />
+            <Route path="/contact" element={<ComingSoonPage />} />
+            <Route path="/billetterie" element={<ComingSoonPage />} />
+            <Route path="/reglement" element={<ComingSoonPage />} />
+            <Route path="/mentions-legales" element={<ComingSoonPage />} />
+          </Route>
 
-        <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 text-left text-sm space-y-2 mb-6">
-          <div className="flex items-center justify-between">
-            <span className="font-semibold text-slate-700">Socle technique :</span>
-            <span className="text-emerald-700 font-medium">React + Vite + TS + Tailwind</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="font-semibold text-slate-700">Base PostgreSQL :</span>
-            <span className="text-emerald-700 font-medium">Supabase RLS & Migrations</span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="font-semibold text-slate-700">Statut :</span>
-            <span className="text-slate-600 font-mono text-xs">{editionStatus}</span>
-          </div>
-        </div>
+          {/* Pages d'authentification (Guest only) */}
+          <Route path="/connexion" element={<GuestOnly><LoginPage /></GuestOnly>} />
+          <Route path="/inscription" element={<GuestOnly><RegisterPage /></GuestOnly>} />
+          <Route path="/mot-de-passe-oublie" element={<GuestOnly><ForgotPasswordPage /></GuestOnly>} />
 
-        <p className="text-xs text-slate-500 italic">
-          « La Guinée roule vers l'avenir. »
-        </p>
-      </div>
-    </main>
+          {/* Réinitialisation de mot de passe (accessible avec le token URL) */}
+          <Route path="/reinitialiser-mot-de-passe" element={<ResetPasswordPage />} />
+
+          {/* Espace Compte & Sécurité (Authentification requise) */}
+          <Route
+            path="/mon-compte"
+            element={<RequireAuth><AccountPage /></RequireAuth>}
+          />
+          <Route
+            path="/securite"
+            element={<RequireAuth><SecurityPage /></RequireAuth>}
+          />
+
+          {/* Espace Administration (Rôle admin + MFA aal2 obligatoire) */}
+          <Route
+            path="/admin"
+            element={<RequireRole roles={['admin']}><AdminDashboard /></RequireRole>}
+          />
+
+          {/* Espace Personnel / Staff (Rôle admin ou staff + MFA aal2 obligatoire) */}
+          <Route
+            path="/staff/scan"
+            element={<RequireRole roles={['admin', 'staff']}><StaffScanPage /></RequireRole>}
+          />
+
+          {/* 404 — Page non trouvée */}
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   )
 }
 

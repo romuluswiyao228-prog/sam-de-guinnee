@@ -1,0 +1,4 @@
+# Configuration Supabase SAM Guinée
+# Remplacer par l'URL et la clé anonyme de votre instance locale ou de développement
+VITE_SUPABASE_URL=https://nvvakakcfmcrpgzeyinf.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52dmFrYWtjZm1jcnBnemV5aW5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTMyMjE0OTksImV4cCI6MjEwODc5NzQ5OX0.Zvv3nXZ_Ox5qOpf3cLV0jeM4R77l_xOA6fekOswjlfs

@@ -125,7 +125,7 @@ CREATE OR REPLACE FUNCTION public.generate_ticket_code(prefix TEXT)
 RETURNS TEXT
 LANGUAGE sql
 AS $$
-    SELECT prefix || '-' || upper(encode(gen_random_bytes(4), 'hex'));
+    SELECT prefix || '-' || upper(encode(extensions.gen_random_bytes(4), 'hex'));
 $$;
 
 -- Fonction 1 : reserve_seats (Atomique, avec verrou de ligne FOR UPDATE)
